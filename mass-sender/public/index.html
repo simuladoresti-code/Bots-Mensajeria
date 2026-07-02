@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mass Sender PRO - Envío Masivo</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Sidebar de navegación -->
+    <aside class="sidebar">
+        <div class="logo">
+            <h2>📧 Mass Sender PRO</h2>
+        </div>
+        <nav class="nav-menu">
+            <button class="nav-btn active" data-tab="dashboard">
+                <span class="icon">📊</span> Dashboard
+            </button>
+            <button class="nav-btn" data-tab="upload">
+                <span class="icon">📁</span> Subir CSV
+            </button>
+            <button class="nav-btn" data-tab="email">
+                <span class="icon">📧</span> Enviar Email
+            </button>
+            <button class="nav-btn" data-tab="whatsapp">
+                <span class="icon">💬</span> WhatsApp
+            </button>
+            <button class="nav-btn" data-tab="historial">
+                <span class="icon">📋</span> Historial
+            </button>
+            <button class="nav-btn" data-tab="config">
+                <span class="icon">⚙️</span> Configuración
+            </button>
+        </nav>
+    </aside>
+
+    <!-- Contenido principal -->
+    <main class="container">
+        <!-- Dashboard -->
+        <section id="dashboard" class="tab-content active">
+            <h1>Dashboard</h1>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">📧</div>
+                    <div class="stat-info">
+                        <p class="stat-label">Total Contactos</p>
+                        <p class="stat-value" id="totalContacts">0</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">✅</div>
+                    <div class="stat-info">
+                        <p class="stat-label">Enviados</p>
+                        <p class="stat-value" id="sentCount">0</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">⏳</div>
+                    <div class="stat-info">
+                        <p class="stat-label">Pendientes</p>
+                        <p class="stat-value" id="pendingCount">0</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">❌</div>
+                    <div class="stat-info">
+                        <p class="stat-label">Errores</p>
+                        <p class="stat-value" id="errorCount">0</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashboard-section">
+                <h2>Campañas Recientes</h2>
+                <div id="recentCampaigns" class="campaigns-list">
+                    <p class="empty-state">No hay campañas aún</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Subir CSV -->
+        <section id="upload" class="tab-content">
+            <h1>Cargar Archivo CSV</h1>
+            <div class="upload-container">
+                <div class="upload-zone" id="uploadZone">
+                    <div class="upload-icon">📁</div>
+                    <p class="upload-text">Arrastra tu archivo CSV aquí</p>
+                    <p class="upload-subtext">o</p>
+                    <input type="file" id="csvFile" accept=".csv" hidden>
+                    <button class="btn btn-primary" onclick="document.getElementById('csvFile').click()">
+                        Seleccionar archivo
+                    </button>
+                </div>
+                <div id="filePreview" class="file-preview" style="display:none;">
+                    <h2>Vista previa del archivo</h2>
+                    <div id="previewTable" class="preview-table"></div>
+                    <button class="btn btn-secondary" onclick="resetUpload()">Cargar otro archivo</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Enviar Emails -->
+        <section id="email" class="tab-content">
+            <h1>Envío Masivo de Emails</h1>
+            <form id="emailForm" class="form-container">
+                <div class="form-group">
+                    <label for="emailFrom">De (Remitente)</label>
+                    <input type="text" id="emailFrom" placeholder="tu-email@dominio.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="emailSubject">Asunto</label>
+                    <input type="text" id="emailSubject" placeholder="Hola {nombre}, promoción especial" required>
+                    <small>Usa {nombre}, {email}, {telefono} para variables</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="emailMessage">Mensaje</label>
+                    <textarea id="emailMessage" placeholder="Hola {nombre},\n\nTe escribimos para..." rows="8" required></textarea>
+                    <small>Usa {nombre}, {email}, {telefono} para variables</small>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="emailDelay">Delay entre envíos (ms)</label>
+                        <input type="number" id="emailDelay" value="1000" min="500" required>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-success">Enviar Emails Masivos</button>
+            </form>
+
+            <div id="emailProgress" class="progress-section" style="display:none;">
+                <h2>Progreso del envío</h2>
+                <div class="progress-bar">
+                    <div id="emailProgressFill" class="progress-fill"></div>
+                </div>
+                <p id="emailProgressText">Iniciando envío...</p>
+                <div id="emailResults" class="results-table"></div>
+            </div>
+        </section>
+
+        <!-- WhatsApp Masivo -->
+        <section id="whatsapp" class="tab-content">
+            <h1>Envío Masivo WhatsApp</h1>
+            <form id="whatsappForm" class="form-container">
+                <div class="form-group">
+                    <label for="whatsappMessage">Mensaje</label>
+                    <textarea id="whatsappMessage" placeholder="Hola {nombre},\n\nTe escribimos desde..." rows="8" required></textarea>
+                    <small>Usa {nombre}, {email}, {telefono} para variables</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="whatsappDelay">Delay entre aperturas (ms)</label>
+                    <input type="number" id="whatsappDelay" value="1000" min="500" required>
+                </div>
+
+                <button type="submit" class="btn btn-success">Generar Links WhatsApp</button>
+            </form>
+
+            <div id="whatsappResults" class="results-section" style="display:none;">
+                <h2>Links generados</h2>
+                <div id="whatsappLinksContainer" class="links-container"></div>
+                <button class="btn btn-secondary" onclick="abrirTodosWhatsapp()">Abrir todos en pestañas</button>
+            </div>
+        </section>
+
+        <!-- Historial -->
+        <section id="historial" class="tab-content">
+            <h1>Historial de Campañas</h1>
+            <div id="historyContainer" class="history-container">
+                <p class="empty-state">No hay historial aún</p>
+            </div>
+        </section>
+
+        <!-- Configuración -->
+        <section id="config" class="tab-content">
+            <h1>Configuración</h1>
+            <form id="configForm" class="form-container">
+                <div class="form-group">
+                    <label for="resendApiKey">API Key de Resend</label>
+                    <input type="password" id="resendApiKey" placeholder="re_xxxxxxxxxxxx">
+                    <small>Obtén tu API key en https://resend.com</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="configEmailFrom">Email remitente</label>
+                    <input type="email" id="configEmailFrom" placeholder="noreply@dominio.com">
+                </div>
+
+                <div class="form-group">
+                    <label for="configDelay">Delay por defecto (ms)</label>
+                    <input type="number" id="configDelay" value="1000" min="500">
+                </div>
+
+                <button type="submit" class="btn btn-primary">Guardar Configuración</button>
+            </form>
+        </section>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>
